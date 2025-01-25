@@ -277,7 +277,7 @@ coords_list_dic = {
     "hips": hips_coordinate_target
 }
 
-
+"""bezier vectors for the feet and hip movement, the bezier_vectors list is to test out the script"""
 bezier_vectors = [Vector((0.0, 0.0, 0.0)), Vector((0.0, -0.18000608682632446, 0.1318873018026352)), Vector((0.0, -0.3945286273956299, 0.197976753115654)), Vector((0.0, -0.6145839095115662, 0.23324468731880188)), Vector((0.0, -0.8346391916275024, 0.2685126066207886)), Vector((0.0, -0.8794701099395752, 0.14181092381477356)), Vector((0.0, -0.90260910987854, 0.0))]
 
 foot_bezier_vec = [Vector((0.0, 0.0, 0.0)), Vector((0.15840864181518555, -0.004654914140701294, 0.24591614305973053)), Vector((0.519545316696167, -0.010119594633579254, 0.2040533423423767)), Vector((1.0203156471252441, 0.003473609685897827, 0.0861692950129509)), Vector((1.5210859775543213, 0.01706681400537491, -0.031714752316474915)), Vector((1.741530418395996, 0.004816815257072449, 0.13751499354839325)), Vector((1.841078519821167, 0.0, 0.0))]
@@ -322,7 +322,7 @@ for body_part in target_dic:
 
 
 
-
+"""blender modal operator"""
 
 # Define the Shaders for Armature once
 R_arm_shader = gpu.shader.from_builtin('UNIFORM_COLOR')
