@@ -119,7 +119,8 @@ class Agent:
             "L_Arm": None,
             "L_Fore_Arm": None
         }
-        self.blend_non_adaptive_bones = { """here the rotation values of a cycle are stored which will be used to blend with the following animation cycle"""
+        self.blend_non_adaptive_bones = { 
+            """here the rotation values of a cycle are stored which will be used to blend with the following animation cycle"""
             "Hips": None,
             "Spine_0": None,
             "Spine_1": None,
@@ -353,12 +354,14 @@ class Agent:
         current_index = current_frame - self.global_animation_start_frame 
         #print("current index:", current_index)
 
-        for bone_name in self.non_adaptive_bones: """iterate through all the bones that are not rotated with the inverse kinematics and rotate them according to the rotation values for the bone"""
+        for bone_name in self.non_adaptive_bones: 
+            """iterate through all the bones that are not rotated with the inverse kinematics and rotate them according to the rotation values for the bone"""
             if not self.non_adaptive_bones[bone_name]:
                 continue
             #bpy.context.view_layer.update()
             bone = armature.pose.bones[bone_name]
-            if bone_name == "Hips": """change hip location"""
+            if bone_name == "Hips": 
+                """change hip location"""
                 direction = self.velocity.normalized()
                 print("####################### Directionj:", direction)
                 angle_in_radians = math.atan2(direction.y, direction.x)
@@ -418,7 +421,8 @@ class Agent:
 
         for bone_name in self.adaptive_bones:
             #print(f"adaptive bones {bone_name}")
-            continue """continue is used to skip this part, this part is where the adaptive bones (meaning the bones that are calculated with the inverse kinematics) would have been rotated with the rotation values from the functions, sadly this part wasnt finished so there are no rotation values to rotate the bones"""
+            continue 
+            """continue is used to skip this part, this part is where the adaptive bones (meaning the bones that are calculated with the inverse kinematics) would have been rotated with the rotation values from the functions, sadly this part wasnt finished so there are no rotation values to rotate the bones"""
             #bpy.context.view_layer.update()
             side_a_bone_name = self.bone_groups[bone_name][0] ############ IMPORTANT: Still have to check if the reihenfolge is correct
             side_c_bone_name = self.bone_groups[bone_name][1]
@@ -522,7 +526,8 @@ class Agent:
             bone_positions[1] = point_B
             bone_positions[2] = target_point
 
-        else: """if target is not in bounds"""
+        else: 
+            """if target is not in bounds"""
             home_to_target = (target_point - home_point)
             home_to_direction_point = (direction_point - home_point)
 
@@ -807,7 +812,8 @@ for frame in range(simulation_start_frame, simulation_end_frame + 1):
 
         
 
-print() """empty print to have a space between each execution of the script in the terminal"""
+print() 
+"""empty print to have a space between each execution of the script in the terminal"""
 ####################################################################################################
 
 ### MODAL-OPERATOR ###
