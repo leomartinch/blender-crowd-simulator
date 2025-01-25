@@ -24,7 +24,7 @@ To-Do:
 
 
 ### CLASS ###
-
+"""agent class: create agent object with attributes that define the characteristics of the agent in the simulation"""
 class Agent:
     def __init__(self, name, direction, location, velocity, target_list, mass, leg_length):
         self.name = name
@@ -95,7 +95,7 @@ def assign_to_grid(agent):
 
     return cell_key
 
-
+"""return all objects (neighbors) that are in the field of view of the agent"""
 def objects_in_field_of_view(agent): # mit skalarprodukt (dot product)
     visible_neighbors = []
     #visible_enemies = []
@@ -131,21 +131,13 @@ def objects_in_field_of_view(agent): # mit skalarprodukt (dot product)
 
     return visible_neighbors
 
-
-
-
-
-
-
-
-
-
+"""check for collisions (between two vectors"""
 def collision_detection(agent, collider, optimisation_rotation=None):
     max_frontal_angle = math.radians(1)
     agent_to_collider = Vector(agent.location) - Vector(collider.location).normalized()
     
     # not very pretty solution, to be changed some time
-    if optimisation_rotation: 
+    if optimisation_rotation:  """this function is also used for the optimisation to find the best rotation so this is where the function is adapted for that"""
         cos_theta = math.cos(optimisation_rotation)
         sin_theta = math.sin(optimisation_rotation)
         x_rotated = agent.direction.x * cos_theta - agent.direction.y * sin_theta
@@ -160,8 +152,8 @@ def collision_detection(agent, collider, optimisation_rotation=None):
     if agent_collider_angle > math.radians(90):
         agent_collider_angle = math.radians(180) - agent_collider_angle
 
-    # --- frontal collision
-    if agent_collider_angle < max_frontal_angle:
+    # --- frontal collision 
+    if agent_collider_angle < max_frontal_angle: """for when two agents are nearly directly coming towards each other"""
         #print("---[Frontal Collision]")
         relative_speed = abs(agent.velocity) + abs(collider.velocity)
         time_to_impact = agent_to_collider.length / relative_speed
@@ -183,9 +175,9 @@ def collision_detection(agent, collider, optimisation_rotation=None):
         return 0 
     
     collision_point = Vector(agent.location) + agent_time_to_impact * agent_direction
-    return collision_point
+    return collision_point """return where the collision will take place"""
 
-
+"""return the probability of a collision happening"""
 def get_probability_of_collision(agent, collider, collision_point):
     target_to_agent = collision_point - Vector(agent.location)
     agent_time_to_collision = target_to_agent.dot(agent.direction) / agent.velocity
@@ -207,7 +199,7 @@ def get_probability_of_collision(agent, collider, collision_point):
 def get_urgency():
     print()
 
-
+"""kind of based on the PLEdestrians paper, calculating the effort exerted for a given path"""
 # big question, how do i handle zero velocity, because the effort would be 0
 def get_agent_effort(delta_velocity, delta_rotation, agent):
     gravitational_constant = 9.81
@@ -262,11 +254,7 @@ def get_collision_and_effort_cost(delta_velocity, delta_rotation, agent, collide
     return collision_probability, effort
 
 
-
-
-
-
-
+"""because i didnt want to use mathematical gradients to find the best rotation and velocity change i made a simple function that checks a given amount of rotations and then finds the best out of it"""
 def optimisation_function(agent, collider): # does not work really
     min_collision_probability = 0.9
     min_effort = float('inf')
@@ -321,7 +309,7 @@ agent_names = [
         "agent_6",
         "agent_7"
 ]
-target_names = [
+target_names = [ """give targets for each agent, must be in same index as the agent"""
         "target_0",
         "target_1",
         "target_2",
@@ -378,7 +366,7 @@ for index, agent_name in enumerate(agent_names):
     targets_dictionary[target_name] = target_name
 
     shader_index += shader_growth_index
-
+    """to have a variety of colors for the drawing of the paths"""
     if shader_index <= 1:       # index is in range 0-1 
             shaders_rgb.append((1, 0, shader_index, 1))
     elif 1 < shader_index <= 2: # index is in range 1-2 
@@ -398,6 +386,7 @@ for index, agent_name in enumerate(agent_names):
 
 end_frame = 80
 
+"""simulation loop"""
 for frame in range(1, end_frame + 1):
     bpy.context.scene.frame_set(frame)
     bpy.context.view_layer.update()
@@ -408,10 +397,10 @@ for frame in range(1, end_frame + 1):
     for index, agent_name in enumerate(agents_dictionary):
         agent = agents_dictionary[agent_name]
         agent_bpy = bpy.data.objects.get(agent_name)
-
-        neighbors = objects_in_field_of_view(agent)
+    
+        neighbors = objects_in_field_of_view(agent) """get all the neighbors of the agent in a list"""
         
-        for neighbor in neighbors:
+        for neighbor in neighbors: """go through each neighbor and check which one is the closest one"""
             collision_probability, effort = get_collision_and_effort_cost(agent.velocity, None, agent, neighbor)
             print(f"{agent.name} will collide with {neighbor.name} with a chance of {collision_probability}")
 
@@ -421,7 +410,7 @@ for frame in range(1, end_frame + 1):
                 agent.min_length_to_neighbor = length_agent_to_neighbor
                 agent.update_nearest_neighbor(neighbor)
         
-        if agent.nearest_neighbor:
+        if agent.nearest_neighbor: """if there is a nearest neighbor then find the rotation and velocity change and update them"""
             print(f"{agent.name} nearest neighbor is {agent.nearest_neighbor.name}")
             best_velocity, best_rotation = optimisation_function(agent, agent.nearest_neighbor)
             print(f"{agent.name}==best_velocity: {best_velocity}")
@@ -476,7 +465,7 @@ print()
 
 
 ### MODAL-OPERATOR ###
-
+"""blender modal operators used for drawing the paths in blender, based on a default preset from blender"""
 def create_keyframes(name, coordinates):
     max_frame = len(coordinates)
     for frame in range(1, max_frame + 1):
