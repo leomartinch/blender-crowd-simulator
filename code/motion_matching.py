@@ -18,7 +18,7 @@ To-Do:
 - get list of neighbors
 
 AAAAAAAAAAA
-get the fucking blending to work, the function does everything right but the fucking output does not contain the blended rotations
+get the ****** blending to work, the function does everything right but the ******* output does not contain the blended rotations
 
 """
 
@@ -119,7 +119,7 @@ class Agent:
             "L_Arm": None,
             "L_Fore_Arm": None
         }
-        self.blend_non_adaptive_bones = {
+        self.blend_non_adaptive_bones = { """here the rotation values of a cycle are stored which will be used to blend with the following animation cycle"""
             "Hips": None,
             "Spine_0": None,
             "Spine_1": None,
@@ -183,7 +183,7 @@ class Agent:
         return active_foot_home, static_leg_home
 
 
-
+    """get the location where the foot will land next"""
     def get_new_foot_target(self): #, gait_length)
         width = self.stance_width / 2
         #length = agent.velocity * gait_length # of one gait cicle, left foot to left foot again
@@ -203,7 +203,7 @@ class Agent:
 
         return Vector((foot_location_coordinates.x, foot_location_coordinates.y, 0))
 
-
+    """function that stretches and scales a curve so that it goes from a given home to a given target point, return the changed curve in form of coordinates in a list"""
     def stretch_and_scale_curve(self, home_point, target_point, path_coordinates):
         local_path_coordinates = path_coordinates
         print("len pathh:", len(path_coordinates))
@@ -238,7 +238,7 @@ class Agent:
 
         return path_coordinates[:-1]#retargeted_control_points
 
-
+    """a bit missleading, this function sets the rotation values for the legs and arms"""
     def set_leg_animation(self, legs_animation, current_frame, current_target_point):
         self.global_animation_start_frame = current_frame 
         self.global_animation_end_frame = current_frame + (legs_animation.end_frame - 1)
@@ -309,7 +309,7 @@ class Agent:
             #self.non_adaptive_bones[bone_name] = blended_quaternions
             
 
-
+    """is not used, the arms are still moved in the leg function above for simplicity in testing"""
     def set_arm_animation(self, arms_animation, current_frame):
         self.global_animation_start_frame = current_frame 
         self.global_animation_end_frame = current_frame + (arms_animation.end_frame - 1)
@@ -327,7 +327,7 @@ class Agent:
 
 
 
-
+    """blends between two given lists of bone rotations, works perfectly but somehow the bones then dont get the blended list, but if values are printed out and manually put it in, the values are correct"""
     def dynamic_blend_rotations(self, blend_quaternions, animation_quaternions, blend_threshold):
         blended_list = []
 
@@ -347,18 +347,18 @@ class Agent:
         return blended_list
 
 
-
+    """rotate all bones of the character (rotating is a bit missleading because the hip bone (parent bone of the armature) is changed in translation and rotation). its just the function that is called on every frame to update the bone movements"""
     def rotate_all_bones(self, current_frame):
         armature = bpy.data.objects.get(self.armature_name)
         current_index = current_frame - self.global_animation_start_frame 
         #print("current index:", current_index)
 
-        for bone_name in self.non_adaptive_bones:
+        for bone_name in self.non_adaptive_bones: """iterate through all the bones that are not rotated with the inverse kinematics and rotate them according to the rotation values for the bone"""
             if not self.non_adaptive_bones[bone_name]:
                 continue
             #bpy.context.view_layer.update()
             bone = armature.pose.bones[bone_name]
-            if bone_name == "Hips":
+            if bone_name == "Hips": """change hip location"""
                 direction = self.velocity.normalized()
                 print("####################### Directionj:", direction)
                 angle_in_radians = math.atan2(direction.y, direction.x)
@@ -418,7 +418,7 @@ class Agent:
 
         for bone_name in self.adaptive_bones:
             #print(f"adaptive bones {bone_name}")
-            continue
+            continue """continue is used to skip this part, this part is where the adaptive bones (meaning the bones that are calculated with the inverse kinematics) would have been rotated with the rotation values from the functions, sadly this part wasnt finished so there are no rotation values to rotate the bones"""
             #bpy.context.view_layer.update()
             side_a_bone_name = self.bone_groups[bone_name][0] ############ IMPORTANT: Still have to check if the reihenfolge is correct
             side_c_bone_name = self.bone_groups[bone_name][1]
@@ -436,7 +436,7 @@ class Agent:
 
 
 
-
+    """should convert the returned coordinates from the inverse kinematics function into rotation values so that a given bone can be rotated so that their axis alligns with the vectors axis"""
     def convert_vector_to_quaternion(self, ik_coordinates):
         armature = bpy.context.object
         if armature.type != 'ARMATURE':
@@ -466,13 +466,13 @@ class Agent:
 
         return quaternion_rotations
     
-    
+    """based on the attributes of the two bones in the chane, find their location in space so that they touch the target point"""
     def get_inverse_kinematics_vectors(side_a_length, side_c_length, home_point, target_point):
         #for i, sublist in enumerate(controll_point_names):
         #    if current_point in sublist:
         #        index_sublist = i
 
-        """Need to know the length of the sides, home point and target point as vectors"""
+        #"""Need to know the length of the sides, home point and target point as vectors"""
 
         #armature = bpy.data.objects[agent.armature_name]
 
@@ -502,6 +502,7 @@ class Agent:
         home_to_target = (home_point - target_point) # home point to target point
         home_to_direction_point = (home_point - direction_point) # home point to extra point (to form a plane)
 
+        """if target is in bounds (meaning that the target distance from the target point to the home point is smaller than the added length of both bones"""
         if (abs(side_c_length - side_a_length)) <= side_b <= (side_c_length + side_a_length): # if target inside bounds
             axis_of_rotation = home_to_target.cross(home_to_direction_point)
 
@@ -521,7 +522,7 @@ class Agent:
             bone_positions[1] = point_B
             bone_positions[2] = target_point
 
-        else:
+        else: """if target is not in bounds"""
             home_to_target = (target_point - home_point)
             home_to_direction_point = (direction_point - home_point)
 
@@ -614,7 +615,7 @@ class Animation:
 
 
 
-
+"""the logic of the motion matching would have been housed here, for testing i only returned the opposite leg, so if the left leg just walked then the right will be next"""
 def get_best_leg_animation(agent, next_rotation, next_velocity):
     if agent.active_feet[0]:
         agent.active_feet = [False, True]
@@ -626,7 +627,7 @@ def get_best_leg_animation(agent, next_rotation, next_velocity):
     return animation_name
         
 
-
+"""here i would have put a function that chooses which is the best upper body animation"""
 def get_best_arm_animation(next_rotation, next_velocity):
     animation_name = ""
     return animation_name
@@ -638,7 +639,7 @@ def get_best_arm_animation(next_rotation, next_velocity):
 
 
 ### SCRIPT-INITIATION ###
-
+"""import animations saved in json files, in this case for simplicity in testing the two same ones"""
 animation_links = {
     "legs_R_walking": "G:/Softwares/legs_L_walking.json",
     "legs_L_walking": "G:/Softwares/legs_L_walking.json",
@@ -706,6 +707,7 @@ for index, agent_name in enumerate(agent_names):
 
     shader_index += shader_growth_index
 
+    """small if else tree i made to give each agent path a different color to differ them better from each other"""
     if shader_index <= 1:       # index is in range 0-1 
             shaders_rgb.append((1, 0, shader_index, 1))
     elif 1 < shader_index <= 2: # index is in range 1-2 
@@ -732,6 +734,7 @@ simulation_end_frame = 20
 
 #R_step_coords.extend(local_path) # only for testing
 
+"""start of the animation loop, that runs from start to end frame"""
 for frame in range(simulation_start_frame, simulation_end_frame + 1):
     bpy.context.scene.frame_set(frame)
     bpy.context.view_layer.update()
@@ -739,6 +742,7 @@ for frame in range(simulation_start_frame, simulation_end_frame + 1):
     print(f"###[Frame {frame}]")
     time_start = time.time()
 
+    """go through all the agents on each frame to update them"""
     for index, agent_name in enumerate(agents_dictionary):
         agent = agents_dictionary[agent_name]
         agent_bpy = bpy.data.objects.get(agent_name)
@@ -750,39 +754,6 @@ for frame in range(simulation_start_frame, simulation_end_frame + 1):
             continue
 
         ### find next animation
-        """
-        neighbors = objects_in_field_of_view(agent)
-        width = agent.stance_width / 2
-
-        #find agents
-        for neighbor in neighbors:
-            collision_probability, effort = get_collision_and_effort_cost(agent.velocity, None, agent, neighbor)
-            print(f"{agent.name} will collide with {neighbor.name} with a chance of {collision_probability}")
-
-            length_agent_to_neighbor = (Vector(agent.location) - Vector(neighbor.location)).length
-            print("length agent to neighbor:", length_agent_to_neighbor)
-            if length_agent_to_neighbor < agent.min_length_to_neighbor:
-                agent.min_length_to_neighbor = length_agent_to_neighbor
-                agent.update_nearest_neighbor(neighbor)
-        
-        if agent.nearest_neighbor:
-            print(f"{agent.name} nearest neighbor is {agent.nearest_neighbor.name}")
-            best_velocity, best_rotation = optimisation_function(agent, agent.nearest_neighbor)
-            print(f"{agent.name}==best_velocity: {best_velocity}")
-            print(f"{agent.name}==best_rotation: {math.degrees(best_rotation)}")
-            
-            cos_theta = math.cos(best_rotation)
-            sin_theta = math.sin(best_rotation)
-            x_rotated = agent.direction.x * cos_theta - agent.direction.y * sin_theta
-            y_rotated = agent.direction.x * sin_theta + agent.direction.y * cos_theta
-            agent_direction = Vector((x_rotated, y_rotated))
-            agent.update_frame_data(agent_direction, agent.location, agent.velocity) # causing problems
-            new_location = agent_new_location(agent)
-            #agent.update_frame_data(agent_direction, new_location, agent.velocity)
-        else:
-            #print(f"seems like there is no nearest_neighbor for {agent.name}")
-            new_location = agent_new_location(agent)
-        """
         next_rotation = 1
         next_velocity = 1
         #print("hippies:", agent.hip_motion_coordinates)
@@ -827,13 +798,6 @@ for frame in range(simulation_start_frame, simulation_end_frame + 1):
             #print("normal")
             agent.set_arm_animation(leg_animation_object, frame)
 
-
-
-
-        
-
-        
-
         agent.rotate_all_bones(frame)
         #all_path_coords[index].append(three_dimensional_location_vector)
 
@@ -843,11 +807,11 @@ for frame in range(simulation_start_frame, simulation_end_frame + 1):
 
         
 
-print()
+print() """empty print to have a space between each execution of the script in the terminal"""
 ####################################################################################################
 
 ### MODAL-OPERATOR ###
-
+"""blender modal operator to press keys and interface with blender during the execution of the script"""
 def create_keyframes(name, coordinates):
     max_frame = len(coordinates)
     for frame in range(1, max_frame + 1):
@@ -855,6 +819,7 @@ def create_keyframes(name, coordinates):
         obj.location = coordinates[frame - 1]
         obj.keyframe_insert(data_path="location", frame=frame)
 
+"""batches are used to draw the lines in blender, in this case draw the paths of the bones"""
 batches = [] # Define the batches list
 shader = gpu.shader.from_builtin('UNIFORM_COLOR')
 
@@ -955,6 +920,9 @@ bpy.ops.wm.modal_operator('INVOKE_DEFAULT')
 
 ############################################################################
 #################################################
+
+
+"""functions of the crowd simulation, can be found in agents_circle.py too, where they are used, here the script could not be finished on time so the crowd part stays commented"""
 
 """
 
